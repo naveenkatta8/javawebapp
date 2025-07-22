@@ -3,8 +3,16 @@ pipeline {
     tools {
         maven 'maven'
     }
+    environment {
+        BUCKET_NAME = 'jenkins_artifcats'
+    }
     stages {
-        stage('checkout') {
+        stage ('Auth with GCP') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+            }}}
+        stage ('checkout') {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/naveenkatta8/javawebapp']])
             }}
@@ -15,7 +23,7 @@ pipeline {
         }
         stage ('deploy') {
             steps {
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.55.157.220:8080/')], contextPath: null, war: '**/*.war'
+                sh 'gsutil cp target/**.*war gs://jenkins_artifcats/'
             }
         }
         }
