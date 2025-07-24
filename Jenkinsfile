@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {lable 'slave01'}
     tools {
         maven 'maven'
     }
@@ -21,9 +21,14 @@ pipeline {
                 sh 'mvn clean install -f pom.xml'
             }
         }
-        stage ('deploy') {
+        stage ('save artifact') {
             steps {
                 sh 'gsutil cp target/**.*war gs://jenkins_artifcats/'
+            }
+        }
+        stage ('deploy') {
+            steps {
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.68.82.188:8080/')], contextPath: null, war: '**/*.war'
             }
         }
         }
