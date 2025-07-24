@@ -11,7 +11,11 @@ pipeline {
     stages {
         stage ('Slack') {
             steps{
-                slackSend channel: 'all-jenkins-workspace', message: 'Build started', teamDomain: 'jenkinsworksp-a3p8450', tokenCredentialId: 'slack'
+                slackSend (
+                    channel: "${env.SLACK_CHANNEL}", 
+                    message: "Build Started: ${env.JOB_NAME} [${env.BUILD_NUMBER}] <${env.BUILD_URL}|Open>"
+                )
+
             }
         }
         stage ('Auth with GCP') {
@@ -41,7 +45,7 @@ pipeline {
         }
         stage ('deploy') {
             steps {
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://http://35.226.107.19/:8080/')], contextPath: null, war: '**/*.war'
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://http://34.68.82.188/:8080/')], contextPath: null, war: '**/*.war'
             }
         }
         }
