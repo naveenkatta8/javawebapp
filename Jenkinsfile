@@ -21,6 +21,12 @@ pipeline {
                 sh 'mvn clean install -f pom.xml'
             }
         }
+        stage ('Code Quality ') {
+            withSonarQubeEnv ('sonarqube')
+            steps {
+              sh 'mvn clean install -f pom.xml sonar:sonar'  
+            }
+        }
         stage ('save artifact') {
             steps {
                 sh 'gsutil cp target/**.*war gs://jenkins_artifcats/'
