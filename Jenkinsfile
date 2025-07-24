@@ -21,11 +21,11 @@ pipeline {
                 sh 'mvn clean install -f pom.xml'
             }
         }
-        stage ('Code Quality ') {
+        stage ('CodeQuality ') {
             steps {
-            withSonarQubeEnv ('sonarqube')
+            withSonarQubeEnv ('sonarqube'){
             sh 'mvn clean install -f pom.xml sonar:sonar'  
-            }
+            }}
         }
         stage ('save artifact') {
             steps {
