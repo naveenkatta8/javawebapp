@@ -1,5 +1,5 @@
 pipeline {
-    agent {label 'slave01'}
+    agent any
     tools {
         maven 'maven'
     }
@@ -22,9 +22,9 @@ pipeline {
             }
         }
         stage ('Code Quality ') {
-            withSonarQubeEnv ('sonarqube')
             steps {
-              sh 'mvn clean install -f pom.xml sonar:sonar'  
+            withSonarQubeEnv ('sonarqube')
+            sh 'mvn clean install -f pom.xml sonar:sonar'  
             }
         }
         stage ('save artifact') {
