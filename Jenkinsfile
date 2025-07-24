@@ -9,6 +9,11 @@ pipeline {
         BUCKET_NAME = 'jenkins_artifcats'
     }
     stages {
+        stage ('Slack') {
+            steps{
+                slackSend channel: 'all-jenkins-workspace', message: 'Build started', teamDomain: 'jenkinsworksp-a3p8450', tokenCredentialId: 'slack'
+            }
+        }
         stage ('Auth with GCP') {
             steps {
                 withCredentials([file(credentialsId: 'gcp', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
@@ -31,14 +36,15 @@ pipeline {
         }
         stage ('save artifact') {
             steps {
-                sh 'gsutil cp target/**.*war gs://env.BUCKET_NAME/'
+                sh 'gsutil cp target/**.*war gs://jenkins_artifcats/'
             }
         }
         stage ('deploy') {
             steps {
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.68.82.188:8080/')], contextPath: null, war: '**/*.war'
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://http://35.226.107.19/:8080/')], contextPath: null, war: '**/*.war'
             }
-        }}
+        }
+        }
         post {
         success {
             slackSend(
