@@ -4,6 +4,8 @@ pipeline {
         maven 'maven'
     }
     environment {
+        SLACK_CHANNEL = '#all-jenkins-workspace'
+        SLACK_COLOR = '#00FF00'
         BUCKET_NAME = 'jenkins_artifcats'
     }
     stages {
@@ -29,13 +31,29 @@ pipeline {
         }
         stage ('save artifact') {
             steps {
-                sh 'gsutil cp target/**.*war gs://jenkins_artifcats/'
+                sh 'gsutil cp target/**.*war gs://env.BUCKET_NAME/'
             }
         }
         stage ('deploy') {
             steps {
                 deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.68.82.188:8080/')], contextPath: null, war: '**/*.war'
             }
+        }
+        post {
+        success {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                color: "${env.SLACK_COLOR}",
+                message: "✅ *Build Succeeded*: ${env.JOB_NAME} [${env.BUILD_NUMBER}] <${env.BUILD_URL}|Open>"
+            )
+        }
+        failure {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                color: '#FF0000',
+                message: "❌ *Build Failed*: ${env.JOB_NAME} [${env.BUILD_NUMBER}] <${env.BUILD_URL}|Open>"
+            )
+        }
         }
         }
     }
