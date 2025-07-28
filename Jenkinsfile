@@ -13,7 +13,7 @@ pipeline {
             steps{
                 slackSend (
                     channel: "${env.SLACK_CHANNEL}", 
-                    colour: '#FFFF00',
+                    color: '#FFFF00',
                     message: "Build Started: ${env.JOB_NAME} [${env.BUILD_NUMBER}] <${env.BUILD_URL}|Open>"
                 )
 
