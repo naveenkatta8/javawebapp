@@ -13,6 +13,7 @@ pipeline {
             steps{
                 slackSend (
                     channel: "${env.SLACK_CHANNEL}", 
+                    colour: '#FFFF00',
                     message: "Build Started: ${env.JOB_NAME} [${env.BUILD_NUMBER}] <${env.BUILD_URL}|Open>"
                 )
 
@@ -45,7 +46,7 @@ pipeline {
         }
         stage ('deploy') {
             steps {
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.68.82.188:8080/')], contextPath: null, war: '**/*.war'
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'deployer', path: '', url: 'http://34.56.79.108/:8080/')], contextPath: null, war: '**/*.war'
             }
         }
         }
